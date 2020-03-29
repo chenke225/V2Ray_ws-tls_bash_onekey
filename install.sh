@@ -289,9 +289,9 @@ modify_nginx_other() {
     sed -i "/location/c \\\tlocation ${camouflage}" ${nginx_conf}
     sed -i "/proxy_pass/c \\\tproxy_pass http://127.0.0.1:${PORT};" ${nginx_conf}
     sed -i "/return/c \\\treturn 301 https://${domain}\$request_uri;" ${nginx_conf}
-    sed -i "/returc/c \\\treturn 302 https://www.idleleo.com;" ${nginx_conf}
+    sed -i "/returc/c \\\treturn 302 https://www.laoshei.com;" ${nginx_conf}
     sed -i "/locatioc/c \\\tlocation \/" ${nginx_conf}
-    sed -i "s/        server_name  localhost;/\tserver_name  localhost;\n\n\tif (\$host = '${local_ip}'){\n\treturn 302 https:\/\/www.idleleo.com;\n\t}\n/" ${nginx_dir}/conf/nginx.conf
+    sed -i "s/        server_name  localhost;/\tserver_name  localhost;\n\n\tif (\$host = '${local_ip}'){\n\treturn 302 https:\/\/www.laoshei.com;\n\t}\n/" ${nginx_dir}/conf/nginx.conf
     #sed -i "27i \\\tproxy_intercept_errors on;"  ${nginx_dir}/conf/nginx.conf
 }
 web_camouflage() {
@@ -423,7 +423,7 @@ ssl_install() {
     judge "安装 SSL 证书生成脚本"
 }
 domain_check() {
-    read -rp "请输入你的域名信息(eg:www.idleleo.com):" domain
+    read -rp "请输入你的域名信息(eg:www.laoshei.com):" domain
     domain_ip=$(ping "${domain}" -c 1 | sed '1{s/[^(]*(//;s/).*//;q}')
     echo -e "${OK} ${GreenBG} 正在获取 公网ip 信息，请耐心等待 ${Font}"
     local_ip=$(curl -4 ip.sb)
@@ -490,7 +490,7 @@ acme() {
 }
 v2ray_conf_add_tls() {
     cd /etc/v2ray || exit
-    wget --no-check-certificate https://raw.githubusercontent.com/paniy/V2Ray_ws-tls_bash_onekey/master/tls/config.json -O config.json
+    wget --no-check-certificate https://raw.githubusercontent.com/guzhig/V2Ray_ws-tls_bash_onekey/master/tls/config.json -O config.json
     modify_path
     modify_alterid
     modify_inbound_port
@@ -498,7 +498,7 @@ v2ray_conf_add_tls() {
 }
 v2ray_conf_add_h2() {
     cd /etc/v2ray || exit
-    wget --no-check-certificate https://raw.githubusercontent.com/paniy/V2Ray_ws-tls_bash_onekey/master/http2/config.json -O config.json
+    wget --no-check-certificate https://raw.githubusercontent.com/guzhig/V2Ray_ws-tls_bash_onekey/master/http2/config.json -O config.json
     modify_path
     modify_alterid
     modify_inbound_port
@@ -534,7 +534,7 @@ nginx_conf_add() {
         index index.html index.htm;
         #root  /home/wwwroot/3DCEList;
         root /400.html;
-        error_page 400 https://www.idleleo.com;
+        error_page 400 https://www.laoshei.com;
         location /ray/
         {
         proxy_redirect off;
@@ -607,7 +607,7 @@ nginx_process_disabled() {
 #    judge "rc.local 配置"
 #}
 acme_cron_update() {
-    wget -N -P /usr/bin/idleleo-v2ray --no-check-certificate "https://raw.githubusercontent.com/paniy/V2Ray_ws-tls_bash_onekey/master/ssl_update.sh"
+    wget -N -P /usr/bin/idleleo-v2ray --no-check-certificate "https://raw.githubusercontent.com/guzhig/V2Ray_ws-tls_bash_onekey/master/ssl_update.sh"
     if [[ "${ID}" == "centos" ]]; then
         #        sed -i "/acme.sh/c 0 3 * * 0 \"/root/.acme.sh\"/acme.sh --cron --home \"/root/.acme.sh\" \
         #        &> /dev/null" /var/spool/cron/root
@@ -866,7 +866,7 @@ install_v2_h2() {
 
 }
 update_sh() {
-    ol_version=$(curl -L -s https://raw.githubusercontent.com/paniy/V2Ray_ws-tls_bash_onekey/master/install.sh | grep "shell_version=" | head -1 | awk -F '=|"' '{print $3}')
+    ol_version=$(curl -L -s https://raw.githubusercontent.com/guzhig/V2Ray_ws-tls_bash_onekey/master/install.sh | grep "shell_version=" | head -1 | awk -F '=|"' '{print $3}')
     echo "$ol_version" >$version_cmp
     echo "$shell_version" >>$version_cmp
     if [[ "$shell_version" < "$(sort -rV $version_cmp | head -1)" ]]; then
@@ -875,7 +875,7 @@ update_sh() {
         case $update_confirm in
         [yY][eE][sS] | [yY])
             rm -f ${idleleo_commend_file}
-            wget -N --no-check-certificate -P ${idleleo_v2ray_dir} https://raw.githubusercontent.com/paniy/V2Ray_ws-tls_bash_onekey/master/install.sh && chmod +x ${idleleo_v2ray_dir}/install.sh
+            wget -N --no-check-certificate -P ${idleleo_v2ray_dir} https://raw.githubusercontent.com/guzhig/V2Ray_ws-tls_bash_onekey/master/install.sh && chmod +x ${idleleo_v2ray_dir}/install.sh
             ln -s ${idleleo_v2ray_dir}/install.sh ${idleleo_commend_file}
             echo -e "${OK} ${GreenBG} 更新完成 ${Font}"
             exit 0
@@ -928,8 +928,8 @@ menu() {
     update_sh
     echo -e "\t V2ray 安装管理脚本 ${Red}[${shell_version}]${Font}"
     echo -e "\t---authored by wulabing---"
-    echo -e "\t---changed by www.idleleo.com---"
-    echo -e "\thttps://github.com/paniy\n"
+    echo -e "\t---changed by www.laoshei.com---"
+    echo -e "\thttps://github.com/guzhig\n"
     echo -e "当前已安装版本:${shell_mode}\n"
 
     idleleo_commend
