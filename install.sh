@@ -40,7 +40,7 @@ nginx_dir="/etc/nginx"
 web_dir="/home/wwwroot"
 nginx_openssl_src="/usr/local/src"
 v2ray_bin_dir="/usr/bin/v2ray"
-idleleo_v2ray_dir="/usr/bin/idleleo-v2ray"
+laoshei_v2ray_dir="/usr/bin/laoshei-v2ray"
 v2ray_info_file="$HOME/v2ray_info.inf"
 v2ray_qr_config_file="/usr/local/vmess_qr.json"
 nginx_systemd_file="/etc/systemd/system/nginx.service"
@@ -48,8 +48,8 @@ v2ray_systemd_file="/etc/systemd/system/v2ray.service"
 v2ray_access_log="/var/log/v2ray/access.log"
 v2ray_error_log="/var/log/v2ray/error.log"
 amce_sh_file="/root/.acme.sh/acme.sh"
-ssl_update_file="${idleleo_v2ray_dir}/ssl_update.sh"
-idleleo_commend_file="/usr/bin/idleleo"
+ssl_update_file="${laoshei_v2ray_dir}/ssl_update.sh"
+laoshei_commend_file="/usr/bin/laoshei"
 nginx_version="1.16.1"
 openssl_version="1.1.1d"
 jemalloc_version="5.2.1"
@@ -607,7 +607,7 @@ nginx_process_disabled() {
 #    judge "rc.local 配置"
 #}
 acme_cron_update() {
-    wget -N -P /usr/bin/idleleo-v2ray --no-check-certificate "https://raw.githubusercontent.com/guzhig/V2Ray_ws-tls_bash_onekey/master/ssl_update.sh"
+    wget -N -P /usr/bin/laoshei-v2ray --no-check-certificate "https://raw.githubusercontent.com/guzhig/V2Ray_ws-tls_bash_onekey/master/ssl_update.sh"
     if [[ "${ID}" == "centos" ]]; then
         #        sed -i "/acme.sh/c 0 3 * * 0 \"/root/.acme.sh\"/acme.sh --cron --home \"/root/.acme.sh\" \
         #        &> /dev/null" /var/spool/cron/root
@@ -874,9 +874,9 @@ update_sh() {
         read -r update_confirm
         case $update_confirm in
         [yY][eE][sS] | [yY])
-            rm -f ${idleleo_commend_file}
-            wget -N --no-check-certificate -P ${idleleo_v2ray_dir} https://raw.githubusercontent.com/guzhig/V2Ray_ws-tls_bash_onekey/master/install.sh && chmod +x ${idleleo_v2ray_dir}/install.sh
-            ln -s ${idleleo_v2ray_dir}/install.sh ${idleleo_commend_file}
+            rm -f ${laoshei_commend_file}
+            wget -N --no-check-certificate -P ${laoshei_v2ray_dir} https://raw.githubusercontent.com/guzhig/V2Ray_ws-tls_bash_onekey/master/install.sh && chmod +x ${laoshei_v2ray_dir}/install.sh
+            ln -s ${laoshei_v2ray_dir}/install.sh ${laoshei_commend_file}
             echo -e "${OK} ${GreenBG} 更新完成 ${Font}"
             exit 0
             ;;
@@ -912,16 +912,16 @@ list() {
         ;;
     esac
 }
-idleleo_commend() {
+laoshei_commend() {
     #增加管理命令
-    if [ -L "${idleleo_commend_file}" ];then
-        echo -e "${Green}可以使用${Red}idleleo${Font}命令管理脚本\n${Font}"
+    if [ -L "${laoshei_commend_file}" ];then
+        echo -e "${Green}可以使用${Red}laoshei${Font}命令管理脚本\n${Font}"
     else
-        if [ -L "/usr/local/bin/idleleo" ];then
-            rm -f /usr/local/bin/idleleo
+        if [ -L "/usr/local/bin/laoshei" ];then
+            rm -f /usr/local/bin/laoshei
         fi
-        ln -s $(cd "$(dirname "$0")"; pwd)/install.sh ${idleleo_commend_file}
-        echo -e "${Green}可以使用${Red}idleleo${Font}命令管理脚本\n${Font}"
+        ln -s $(cd "$(dirname "$0")"; pwd)/install.sh ${laoshei_commend_file}
+        echo -e "${Green}可以使用${Red}laoshei${Font}命令管理脚本\n${Font}"
     fi
 }
 menu() {
@@ -932,7 +932,7 @@ menu() {
     echo -e "\thttps://github.com/guzhig\n"
     echo -e "当前已安装版本:${shell_mode}\n"
 
-    idleleo_commend
+    laoshei_commend
 
     echo -e "—————————————— 安装向导 ——————————————"""
     echo -e "${Green}0.${Font}  升级 脚本"
@@ -961,33 +961,33 @@ menu() {
     case $menu_num in
     0)
         update_sh
-        bash idleleo
+        bash laoshei
         ;;
     1)
         shell_mode="ws"
         install_v2ray_ws_tls
-        bash idleleo
+        bash laoshei
         ;;
     2)
         shell_mode="h2"
         install_v2_h2
-        bash idleleo
+        bash laoshei
         ;;
     3)
         bash <(curl -L -s https://install.direct/go.sh)
-        bash idleleo
+        bash laoshei
         ;;
     4)
         read -rp "请输入UUID:" UUID
         modify_UUID
         start_process_systemd
-        bash idleleo
+        bash laoshei
         ;;
     5)
         read -rp "请输入alterID:" alterID
         modify_alterid
         start_process_systemd
-        bash idleleo
+        bash laoshei
         ;;
     6)
         read -rp "请输入连接端口:" port
@@ -997,58 +997,58 @@ menu() {
             modify_inbound_port
         fi
         start_process_systemd
-        bash idleleo
+        bash laoshei
         ;;
     7)
         tls_type
-        bash idleleo
+        bash laoshei
         ;;
     8)
         show_access_log
-        bash idleleo
+        bash laoshei
         ;;
     9)
         show_error_log
-        bash idleleo
+        bash laoshei
         ;;
     10)
         basic_information
         vmess_qr_link_image
         show_information
-        bash idleleo
+        bash laoshei
         ;;
     11)
         bbr_boost_sh
-        bash idleleo
+        bash laoshei
         ;;
     12)
         mtproxy_sh
-        bash idleleo
+        bash laoshei
         ;;
     13)
         stop_process_systemd
         ssl_update_manuel
         start_process_systemd
-        bash idleleo
+        bash laoshei
         ;;
     14)
         uninstall_all
-        bash idleleo
+        bash laoshei
         ;;
     15)
         acme_cron_update
-        bash idleleo
+        bash laoshei
         ;;
     16)
         delete_tls_key_and_crt
-        bash idleleo
+        bash laoshei
         ;;
     17)
         exit 0
         ;;
     *)
         echo -e "${RedBG}请输入正确的数字${Font}"
-        bash idleleo
+        bash laoshei
         ;;
     esac
 }
