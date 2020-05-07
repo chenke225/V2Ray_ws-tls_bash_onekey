@@ -29,7 +29,7 @@ OK="${Green}[OK]${Font}"
 Error="${Red}[错误]${Font}"
 
 # 版本
-shell_version="1.1.3.2"
+shell_version="1.1.3.4"
 shell_mode="None"
 version_cmp="/tmp/version_cmp.tmp"
 v2ray_conf_dir="/etc/v2ray"
@@ -51,7 +51,7 @@ amce_sh_file="/root/.acme.sh/acme.sh"
 ssl_update_file="${laoshei_v2ray_dir}/ssl_update.sh"
 laoshei_commend_file="/usr/bin/laoshei"
 nginx_version="1.16.1"
-openssl_version="1.1.1d"
+openssl_version="1.1.1g"
 jemalloc_version="5.2.1"
 old_config_status="off"
 # v2ray_plugin_version="$(wget -qO- "https://github.com/shadowsocks/v2ray-plugin/tags" | grep -E "/shadowsocks/v2ray-plugin/releases/tag/" | head -1 | sed -r 's/.*tag\/v(.+)\">.*/\1/')"
@@ -291,6 +291,7 @@ modify_nginx_other() {
     sed -i "/return/c \\\treturn 301 https://${domain}\$request_uri;" ${nginx_conf}
     sed -i "/returc/c \\\treturn 302 https://www.laoshei.com;" ${nginx_conf}
     sed -i "/locatioc/c \\\tlocation \/" ${nginx_conf}
+    sed -i "s/    #gzip  on;/    #gzip  on;\n    server_tokens off;/" ${nginx_dir}/conf/nginx.conf
     sed -i "s/        server_name  localhost;/\tserver_name  localhost;\n\n\tif (\$host = '${local_ip}'){\n\treturn 302 https:\/\/www.laoshei.com;\n\t}\n/" ${nginx_dir}/conf/nginx.conf
     #sed -i "27i \\\tproxy_intercept_errors on;"  ${nginx_dir}/conf/nginx.conf
 }
@@ -389,6 +390,7 @@ nginx_install() {
         --with-http_mp4_module \
         --with-http_secure_link_module \
         --with-http_v2_module \
+        --with-http_sub_module \
         --with-cc-opt='-O3' \
         --with-ld-opt="-ljemalloc" \
         --with-openssl=../openssl-"$openssl_version"
@@ -490,7 +492,7 @@ acme() {
 }
 v2ray_conf_add_tls() {
     cd /etc/v2ray || exit
-    wget --no-check-certificate https://raw.githubusercontent.com/guzhig/V2Ray_ws-tls_bash_onekey/master/tls/config.json -O config.json
+    wget --no-check-certificate https://raw.githubusercontent.com/paniy/V2Ray_ws-tls_bash_onekey/master/tls/config.json -O config.json
     modify_path
     modify_alterid
     modify_inbound_port
@@ -498,7 +500,7 @@ v2ray_conf_add_tls() {
 }
 v2ray_conf_add_h2() {
     cd /etc/v2ray || exit
-    wget --no-check-certificate https://raw.githubusercontent.com/guzhig/V2Ray_ws-tls_bash_onekey/master/http2/config.json -O config.json
+    wget --no-check-certificate https://raw.githubusercontent.com/paniy/V2Ray_ws-tls_bash_onekey/master/http2/config.json -O config.json
     modify_path
     modify_alterid
     modify_inbound_port
@@ -607,7 +609,7 @@ nginx_process_disabled() {
 #    judge "rc.local 配置"
 #}
 acme_cron_update() {
-    wget -N -P /usr/bin/laoshei-v2ray --no-check-certificate "https://raw.githubusercontent.com/guzhig/V2Ray_ws-tls_bash_onekey/master/ssl_update.sh"
+    wget -N -P /usr/bin/laoshei-v2ray --no-check-certificate "https://raw.githubusercontent.com/paniy/V2Ray_ws-tls_bash_onekey/master/ssl_update.sh"
     if [[ "${ID}" == "centos" ]]; then
         #        sed -i "/acme.sh/c 0 3 * * 0 \"/root/.acme.sh\"/acme.sh --cron --home \"/root/.acme.sh\" \
         #        &> /dev/null" /var/spool/cron/root
@@ -717,7 +719,6 @@ nginx_systemd() {
 [Unit]
 Description=The NGINX HTTP and reverse proxy server
 After=syslog.target network.target remote-fs.target nss-lookup.target
-
 [Service]
 Type=forking
 PIDFile=/etc/nginx/logs/nginx.pid
@@ -726,7 +727,6 @@ ExecStart=/etc/nginx/sbin/nginx -c ${nginx_dir}/conf/nginx.conf
 ExecReload=/etc/nginx/sbin/nginx -s reload
 ExecStop=/bin/kill -s QUIT \$MAINPID
 PrivateTmp=true
-
 [Install]
 WantedBy=multi-user.target
 EOF
@@ -773,7 +773,7 @@ ssl_update_manuel() {
 }
 bbr_boost_sh() {
     [ -f "tcp.sh" ] && rm -rf ./tcp.sh
-    wget -N --no-check-certificate "https://github.com/ylx2016/Linux-NetSpeed/releases/download/sh/tcp.sh" && chmod +x tcp.sh && ./tcp.sh
+    wget -N --no-check-certificate "https://raw.githubusercontent.com/ylx2016/Linux-NetSpeed/master/tcp.sh" && chmod +x tcp.sh && ./tcp.sh
 }
 mtproxy_sh() {
     [ -f "mtproxy_go.sh" ] && rm -rf ./mtproxy_go.sh
@@ -866,7 +866,7 @@ install_v2_h2() {
 
 }
 update_sh() {
-    ol_version=$(curl -L -s https://raw.githubusercontent.com/guzhig/V2Ray_ws-tls_bash_onekey/master/install.sh | grep "shell_version=" | head -1 | awk -F '=|"' '{print $3}')
+    ol_version=$(curl -L -s https://raw.githubusercontent.com/paniy/V2Ray_ws-tls_bash_onekey/master/install.sh | grep "shell_version=" | head -1 | awk -F '=|"' '{print $3}')
     echo "$ol_version" >$version_cmp
     echo "$shell_version" >>$version_cmp
     if [[ "$shell_version" < "$(sort -rV $version_cmp | head -1)" ]]; then
@@ -875,7 +875,7 @@ update_sh() {
         case $update_confirm in
         [yY][eE][sS] | [yY])
             rm -f ${laoshei_commend_file}
-            wget -N --no-check-certificate -P ${laoshei_v2ray_dir} https://raw.githubusercontent.com/guzhig/V2Ray_ws-tls_bash_onekey/master/install.sh && chmod +x ${laoshei_v2ray_dir}/install.sh
+            wget -N --no-check-certificate -P ${laoshei_v2ray_dir} https://raw.githubusercontent.com/paniy/V2Ray_ws-tls_bash_onekey/master/install.sh && chmod +x ${laoshei_v2ray_dir}/install.sh
             ln -s ${laoshei_v2ray_dir}/install.sh ${laoshei_commend_file}
             echo -e "${OK} ${GreenBG} 更新完成 ${Font}"
             exit 0
@@ -929,7 +929,7 @@ menu() {
     echo -e "\t V2ray 安装管理脚本 ${Red}[${shell_version}]${Font}"
     echo -e "\t---authored by wulabing---"
     echo -e "\t---changed by www.laoshei.com---"
-    echo -e "\thttps://github.com/guzhig\n"
+    echo -e "\thttps://github.com/paniy\n"
     echo -e "当前已安装版本:${shell_mode}\n"
 
     laoshei_commend
